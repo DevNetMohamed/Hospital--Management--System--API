@@ -1,0 +1,16 @@
+export const USER_MESSAGES = {
+  USER_NOT_FOUND: 'User not found',
+  EMAIL_ALREADY_EXISTS: 'Email already exists',
+  ROLE_NOT_FOUND: 'Role not found',
+  USER_NOT_DELETED: 'User is not deleted',
+  CURRENT_PASSWORD_INCORRECT: 'Current password is incorrect',
+  INVALID_CREDENTIALS: 'Invalid email or password',
+  CREATE_FAILED: 'Failed to create user',
+  UPDATE_FAILED: 'Failed to update user',
+  DELETE_FAILED: 'Failed to delete user',
+  RESTORE_FAILED: 'Failed to restore user',
+  FETCH_FAILED: 'Failed to fetch users',
+  CHANGE_PASSWORD_FAILED: 'Failed to change password',
+  DELETE_SUCCESS: 'User soft-deleted successfully',
+  PASSWORD_CHANGED_SUCCESS: 'Password changed successfully',
+};
