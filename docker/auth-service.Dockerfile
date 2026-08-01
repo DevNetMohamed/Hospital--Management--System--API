@@ -1,12 +1,12 @@
 FROM mohamedadel204/hospital-base:1.2 AS builder
-
+ENV CI=true
 USER root
 
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --config.allow-build=unrs-resolver
 
 COPY apps ./apps
 COPY libs ./libs

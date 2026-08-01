@@ -1,5 +1,7 @@
 FROM mohamedadel204/hospital-base:1.2 AS builder
 
+ENV CI=true
+
 USER root
 
 WORKDIR /app
@@ -7,7 +9,7 @@ WORKDIR /app
 # Dependencies
 COPY package.json pnpm-lock.yaml ./
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --config.allow-build=unrs-resolver
 
 # Source Code
 COPY apps ./apps
