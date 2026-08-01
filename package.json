@@ -7,6 +7,8 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
+    "build:api-gateway": "nest build api-gateway",
+    "build:auth-service": "nest build auth-service",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -29,7 +31,6 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/typeorm": "^11.0.3",
-    "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "class-validator": "^0.15.1",
     "http-proxy-middleware": "^4.2.0",
