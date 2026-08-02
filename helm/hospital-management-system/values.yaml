@@ -1,5 +1,18 @@
 global:
   namespace: hospital-management-system
+config:
+  KAFKA_BROKER: "kafka:9092"
+  KAFKA_CONSUMER_GROUP: "hospital-management-system-consumer"
+  DB_HOST: "host.docker.internal"
+  DB_PORT: "5433"
+  DB_USERNAME: "postgres"
+  DB_NAME: "hospital_db"
+  JWT_EXPIRES_IN: "1d"
+
+secrets:
+  DB_PASSWORD: "postgres"
+  JWT_SECRET: "kjgvlvnsanlblzkndszkjbdvmS"
+
 services:
   - name: api-gateway
     replicaCount: 2
@@ -15,7 +28,7 @@ services:
 
   - name: auth-service
     replicaCount: 2
-    image: 
+    image:
       repository: mohamedadel204/auth-service
       tag: 5f8801b1ccaf09e7e2fbc60607447a1d7014cef1
       pullPolicy: IfNotPresent

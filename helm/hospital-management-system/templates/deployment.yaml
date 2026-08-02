@@ -26,6 +26,11 @@ spec:
 
           imagePullPolicy: {{ .image.pullPolicy }}
 
+          envForm:
+            - configMapRef:
+                name: hospital-config
+            - secretRef:
+                name: hospital-secrets
           ports:
             - containerPort: {{ .containerPort }}
 

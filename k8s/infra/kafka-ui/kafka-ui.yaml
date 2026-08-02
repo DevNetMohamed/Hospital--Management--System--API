@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-ui
+  namespace: hospital-management-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-ui
+  template:
+    metadata:
+      labels:
+        app: kafka-ui
+    spec:
+      containers:
+        - name: kafka-ui
+          image: provectuslabs/kafka-ui:latest
+          env:
+            - name: KAFKA_CLUSTERS_0_NAME
+              value: "hospital-management-system"
+            - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+              value: "kafka:9092"
+            - name: KAFKA_CLUSTERS_0_ZOOKEEPER
+              value: "zookeeper:2181"
+          ports:
+            - containerPort: 8080
