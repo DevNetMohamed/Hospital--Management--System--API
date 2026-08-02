@@ -1,0 +1,26 @@
+global:
+  namespace: hospital-management-system
+services:
+  - name: api-gateway
+    replicaCount: 2
+    image:
+      repository: mohamedadel204/api-gateway
+      tag: 5f8801b1ccaf09e7e2fbc60607447a1d7014cef1
+      pullPolicy: IfNotPresent
+
+    service:
+      type: ClusterIP
+      port: 3000
+    containerPort: 3000
+
+  - name: auth-service
+    replicaCount: 2
+    image: 
+      repository: mohamedadel204/auth-service
+      tag: 5f8801b1ccaf09e7e2fbc60607447a1d7014cef1
+      pullPolicy: IfNotPresent
+
+    service:
+      type: ClusterIP
+      port: 3001
+    containerPort: 3001

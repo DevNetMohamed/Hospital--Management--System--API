@@ -1,0 +1,40 @@
+name: Deploy CD
+
+on:
+    workflow_run:
+        workflows: ["Build and Push Docker Images"]
+        types:
+            - completed
+        branches: [master]
+
+jobs:
+    deploy:
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        runs-on: self-hosted
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.event.workflow_run.head_sha }}
+
+            - name: Point kubectl at the local kind cluster
+              run: kubectl config use-context docker-desktop
+
+            - name: Deploy with Helm
+              # services[0] = api-gateway, services[1] = auth-service, matching
+              # the order in values.yaml. Both get the same tag since both
+              # images are built and pushed with the same commit SHA.
+              run: |
+                  helm upgrade --install hospital-management-system \
+                    ./helm/hospital-management-system \
+                    --namespace hospital-management-system \
+                    --create-namespace \
+                    --set services[0].image.tag=${{ github.event.workflow_run.head_sha }} \
+                    --set services[1].image.tag=${{ github.event.workflow_run.head_sha }} \
+                    --wait --timeout 5m
+
+            - name: Verify rollout
+              run: |
+                  kubectl rollout status deployment/api-gateway -n hospital-management-system
+                  kubectl rollout status deployment/auth-service -n hospital-management-system
