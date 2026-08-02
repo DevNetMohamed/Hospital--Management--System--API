@@ -1,6 +1,15 @@
 name: Deploy CD
 
 on:
+    workflow_dispatch:
+        inputs:
+            image_tag:
+                description: >
+                    Image tag to deploy. Use "latest" for a chart-only redeploy
+                    (no new app code), or a specific commit SHA if you need an
+                    exact build that was pushed by the CI workflow.
+                required: false
+                default: "latest"
     workflow_run:
         workflows: ["Build and Push Docker Images"]
         types:
@@ -9,14 +18,28 @@ on:
 
 jobs:
     deploy:
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        # Only gate on conclusion when triggered by workflow_run.
+        # A manual workflow_dispatch run has no workflow_run event, so this
+        # condition must pass through in that case instead of evaluating to false.
+        if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
         runs-on: self-hosted
 
         steps:
+            - name: Resolve image tag and commit to check out
+              id: resolve
+              run: |
+                  if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+                    echo "tag=${{ inputs.image_tag }}" >> "$GITHUB_OUTPUT"
+                    echo "ref=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "tag=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+                    echo "ref=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+                  fi
+
             - name: Checkout
               uses: actions/checkout@v4
               with:
-                  ref: ${{ github.event.workflow_run.head_sha }}
+                  ref: ${{ steps.resolve.outputs.ref }}
 
             - name: Point kubectl at the local kind cluster
               run: kubectl config use-context docker-desktop
@@ -30,8 +53,8 @@ jobs:
               # This edit is local to the runner's checkout only; it is never
               # committed or pushed back to the repo.
               run: |
-                  yq eval '(.services[] | select(.name == "api-gateway") | .image.tag) = "${{ github.event.workflow_run.head_sha }}"' -i ./helm/hospital-management-system/values.yaml
-                  yq eval '(.services[] | select(.name == "auth-service") | .image.tag) = "${{ github.event.workflow_run.head_sha }}"' -i ./helm/hospital-management-system/values.yaml
+                  yq eval '(.services[] | select(.name == "api-gateway") | .image.tag) = "${{ steps.resolve.outputs.tag }}"' -i ./helm/hospital-management-system/values.yaml
+                  yq eval '(.services[] | select(.name == "auth-service") | .image.tag) = "${{ steps.resolve.outputs.tag }}"' -i ./helm/hospital-management-system/values.yaml
 
             - name: Deploy with Helm
               run: |
