@@ -21,17 +21,24 @@ jobs:
             - name: Point kubectl at the local kind cluster
               run: kubectl config use-context docker-desktop
 
+            - name: Patch image tags in values.yaml
+              # Editing values.yaml directly (rather than using --set on the
+              # services array) avoids Helm's array-merge behavior, which
+              # replaces the whole array element instead of merging fields —
+              # that was silently wiping out "service", "name", etc. and
+              # causing "nil pointer evaluating .service.type".
+              # This edit is local to the runner's checkout only; it is never
+              # committed or pushed back to the repo.
+              run: |
+                  yq eval '(.services[] | select(.name == "api-gateway") | .image.tag) = "${{ github.event.workflow_run.head_sha }}"' -i ./helm/hospital-management-system/values.yaml
+                  yq eval '(.services[] | select(.name == "auth-service") | .image.tag) = "${{ github.event.workflow_run.head_sha }}"' -i ./helm/hospital-management-system/values.yaml
+
             - name: Deploy with Helm
-              # services[0] = api-gateway, services[1] = auth-service, matching
-              # the order in values.yaml. Both get the same tag since both
-              # images are built and pushed with the same commit SHA.
               run: |
                   helm upgrade --install hospital-management-system \
                     ./helm/hospital-management-system \
                     --namespace hospital-management-system \
                     --create-namespace \
-                    --set services[0].image.tag=${{ github.event.workflow_run.head_sha }} \
-                    --set services[1].image.tag=${{ github.event.workflow_run.head_sha }} \
                     --wait --timeout 5m
 
             - name: Verify rollout
