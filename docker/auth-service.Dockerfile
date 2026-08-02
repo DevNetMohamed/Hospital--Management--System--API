@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
 
-RUN pnpm install --frozen-lockfile --config.allow-build=unrs-resolver
+RUN pnpm install 
 
 COPY apps ./apps
 COPY libs ./libs
@@ -28,7 +28,7 @@ WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
 
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod 
 
 COPY --from=builder /app/dist ./dist
 

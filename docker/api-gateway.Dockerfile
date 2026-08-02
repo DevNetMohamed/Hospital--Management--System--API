@@ -9,7 +9,7 @@ WORKDIR /app
 # Dependencies
 COPY package.json pnpm-lock.yaml ./
 
-RUN pnpm install --frozen-lockfile --config.allow-build=unrs-resolver
+RUN pnpm install 
 
 # Source Code
 COPY apps ./apps
@@ -34,7 +34,7 @@ WORKDIR /app
 # Production dependencies only
 COPY package.json pnpm-lock.yaml ./
 
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod 
 
 # Copy compiled application
 COPY --from=builder /app/dist ./dist
