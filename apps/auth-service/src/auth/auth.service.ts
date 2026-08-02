@@ -48,6 +48,10 @@ export class AuthService {
     user: SafeUser,
     permissions: Permission[],
   ): JwtPayload {
+    if (!user.id) {
+      throw new Error('Cannot build JWT payload: user.id is missing');
+    }
+
     return {
       sub: user.id,
       email: user.email,
