@@ -21,7 +21,7 @@ import { RolePermissionsModule } from '../role-permissions/role-permissions.modu
         signOptions: {
           expiresIn: configService.get<string>(
             'JWT_EXPIRES_IN',
-          ) as JwtModuleOptions['signOptions']['expiresIn']
+          ) as NonNullable<JwtModuleOptions['signOptions']>['expiresIn'],
         },
       }),
     }),
