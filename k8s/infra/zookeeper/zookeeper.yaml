@@ -57,4 +57,3 @@ spec:
         - name: logs
           persistentVolumeClaim:
             claimName: zookeeper-logs
-
