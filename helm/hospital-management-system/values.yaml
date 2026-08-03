@@ -1,10 +1,11 @@
 global:
   namespace: hospital-management-system
+
 config:
   KAFKA_BROKER: "kafka:9092"
   KAFKA_CONSUMER_GROUP: "hospital-management-system-consumer"
-  DB_HOST: "host.docker.internal"
-  DB_PORT: "5433"
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
   DB_USERNAME: "postgres"
   DB_NAME: "hospital_db"
   JWT_EXPIRES_IN: "1d"
